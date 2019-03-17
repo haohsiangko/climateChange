@@ -1,0 +1,74 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://d3js.org/d3.v3.js"></script>    
+    <style>
+    </style>
+    
+    <title>Climate Change</title>
+</head>
+<body>
+    <svg></svg>
+    <script>
+        //畫布
+        d3.select("svg")
+            .attr({
+                x: 0,
+                y: 0,
+                width: 1000,
+                height: 2000,
+            })
+            .style({
+                background: "#eee"
+        });
+        
+        //讀入資料
+        d3.csv("test.csv", function(data){
+            console.log(data);
+            
+            var startX = 10;
+            var startY = 10;
+            var intervalW = 12; 
+            var intervalH = 12; 
+            var rWidth = 20;
+            var rHeight = 5;
+            var color = d3.scale.linear().domain([1911,2018])
+                          .interpolate(d3.interpolateHcl)
+                          .range([d3.rgb("#FFEB3B"), d3.rgb('#1A237E')]);
+            
+//            data.sort(function (a, b) {
+//             return a.tem < b.tem ? 1 : -1;
+//            });
+//            
+            
+
+            
+            //binding
+            circles = d3.select("svg").selectAll("circle").data(data).enter();
+            circles.append("rect")
+                    .attr({
+                        x: function(d){return startX;},
+                        y: function(d){return startY + d.index1*intervalH;},
+                        width: rWidth,
+                        height: rHeight,
+                        fill: function(d){return color(d.year);}
+                }).transition().duration(5000)
+                    .attr({
+                        x: function(d){return startX + d.index3*(intervalW + rWidth);},
+                        y: function(d){return startY + d.index2*intervalH;},
+                });
+            
+      
+        })   //csv
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>
