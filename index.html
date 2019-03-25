@@ -13,11 +13,11 @@
     <svg></svg>
     <script>
         //畫布
-        d3.select("svg")
+        var svg = d3.select("svg")
             .attr({
                 x: 0,
                 y: 0,
-                width: 1000,
+                width: 3000,
                 height: 2000,
             })
             .style({
@@ -28,15 +28,76 @@
         d3.csv("test.csv", function(data){
             console.log(data);
             
-            var startX = 10;
-            var startY = 10;
-            var intervalW = 12; 
+            var startX = 110;
+            var startY = 50;
+            var intervalW = 0;
+            var intervalMonth = 10;
             var intervalH = 12; 
-            var rWidth = 20;
+            var rWidth = 100;
             var rHeight = 5;
+            var dy = 3;
             var color = d3.scale.linear().domain([1911,2018])
                           .interpolate(d3.interpolateHcl)
                           .range([d3.rgb("#FFEB3B"), d3.rgb('#1A237E')]);
+            
+            var scaleX = d3.scale.linear()
+                                    .domain([1,12])
+                                    .range([startX + rWidth/2, startX + (intervalMonth + rWidth)*11 + rWidth/2]);
+            
+            var scaleY = d3.scale.linear()
+                                    .domain([10,32])
+                                    .range([startY +108*intervalH, startY + intervalH]);
+            
+            
+            console.log(scaleX(0));
+            console.log(scaleX(12));
+            console.log(scaleY(10));
+            console.log(scaleY(32));
+
+            
+            
+            //Axis
+            var xAxis = d3.svg.axis().scale(scaleX) //增加軸線物件，並套用尺度(x)
+	                       .orient("bottom") //標示位置
+	                       .ticks(12) //刻度數量
+            
+            var yAxis = d3.svg.axis().scale(scaleY) //增加軸線物件，並套用尺度(y)
+                .orient("left") //標示位置
+                .ticks(10) //刻度數量
+            
+            
+            
+            var h = 1450;
+            var padding = 50;
+            
+            
+            svg.append('g').attr('class', 'axis')
+                .attr('transform', 'translate(0, '+ (h - padding) +')') 
+                .call(xAxis); //將軸線匯入
+            
+            svg.append('g').attr('class', 'axis')
+                .attr('transform', 'translate('+ (padding) +')', 0) 
+                .call(yAxis);
+            
+            
+      
+            
+//            circles = svg.selectAll("circles").data(data).enter();
+//            circles.append("circle")
+//                    .attr({
+//                        cx: function(d){return scaleX(d.month);},
+//                        cy: function(d){return startY + d.index1*intervalH;},
+//                        r: 5,
+//                        fill: function(d){return color(d.year);},
+//            }).transition().duration(5000).delay(3000)
+//                    .attr({
+//                        cx: function(d){return scaleX(d.month);},
+//                        cy: function(d){return scaleY(d.tem);},
+//                        r: 5,
+//                        fill: function(d){return color(d.year);},
+//            });
+            
+
             
 //            data.sort(function (a, b) {
 //             return a.tem < b.tem ? 1 : -1;
@@ -46,19 +107,145 @@
 
             
             //binding
-            circles = d3.select("svg").selectAll("circle").data(data).enter();
-            circles.append("rect")
+            rects = d3.select("svg").selectAll("rects").data(data).enter();
+            rects.append("rect")
                     .attr({
-                        x: function(d){return startX;},
+                        rx: 0,
+                        ry: 0,
+                        x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1);},
                         y: function(d){return startY + d.index1*intervalH;},
                         width: rWidth,
                         height: rHeight,
                         fill: function(d){return color(d.year);}
-                }).transition().duration(5000)
+                })
+                .transition().duration(5000).delay(3000)
                     .attr({
-                        x: function(d){return startX + d.index3*(intervalW + rWidth);},
+                        rx: 0,
+                        ry: 0,
+                        x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1) + 
+                                              d.index3*(rWidth/d.sameRank);},
                         y: function(d){return startY + d.index2*intervalH;},
-                });
+                        width: function(d){return rWidth/d.sameRank-5;},
+                })
+                .transition().duration(5000).delay(11000)
+                    .attr({
+                        rx: 10,
+                        ry: 10,
+                        x: function(d){return scaleX(d.month);},
+                        y: function(d){return scaleY(d.tem);},
+                        width: 10,
+                        height: 10,
+                        opacity: 1,
+                })
+                .transition().duration(5000).delay(16000)
+                    .attr({
+                        fill: function(d){
+                            if(+d.year>=2000){
+                                return color(d.year);
+                               }else{
+                                return "#ccc";
+                               }
+                        },
+                        opacity: function(d){
+                            if(+d.year>=2000){
+                                return 1;
+                               }else{
+                                return 0.3;
+                               }
+                        },
+            })
+                
+    
+//                .transition().duration(5000).delay(13000)
+//                    .attr({
+//                        x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1);},
+//                        y: function(d){return startY + d.index1*intervalH;},
+//                        width: rWidth,
+//                        height: rHeight,
+//                        fill: function(d){return color(d.year);}
+//                })
+                
+            
+            ;
+            
+            //月份
+            months = ['1月','2月','3月','4月','5月','6月',"7月","8月","9月","10月","11月","12月"];
+            monT = d3.select("svg").selectAll(".months").data(months).enter();
+            monT.append("text")
+                    .attr("class","months")
+                    .attr({
+                        x: function(d,i){return  startX + (intervalMonth+rWidth)*i;},
+                        y: 50,
+                        fill: "black",
+                        "font-size": "30px",
+            }).text(function(d){return d;});
+            
+            
+            //年份y軸
+            
+//            years = [1911, 1920, 1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000, 2010, 2018]
+//            
+//            yearT = d3.select("svg").selectAll(".years").data(years).enter();
+//            yearT.append("text")
+//                    .attr("class","years")
+//                    .attr({
+//                        x: 10,
+//                        y: function(d){return startY + (d-1911+1)*(intervalH) + rHeight +dy;},
+//                        fill: "black",
+//                        "font-size": "25px",
+//                        opacity: 1,
+//            }).text(function(d){return d+"年-";})
+//                .transition().duration(1000).delay(3000)
+//                    .attr({
+//                        fill: "black",
+//                        opacity: 0,
+//            }).transition().duration(1000).delay(17000)
+//                    .attr({
+//                        fill: "black",
+//                        opacity: 1,
+//            })
+//            ;
+
+            
+            
+            
+            
+            
+            
+            
+            
+            //排名y軸
+            
+//            ranks = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 108];
+//            
+//            rankT = d3.select("svg").selectAll(".ranks").data(ranks).enter();
+//            
+//            rankT.append("text")
+//                    .attr("class","ranks")
+//                    .attr({
+//                        x: 10,
+//                        y: function(d){return startY + d*(intervalH) + rHeight +dy;},
+//                        fill: "black",
+//                        "font-size": "25px",
+//                        opacity: 0,
+//            }).text(function(d){return "第"+d+"名-";})
+//                .transition().duration(1000).delay(7000)
+//                    .attr({
+//                        fill: "black",
+//                        opacity: 1,
+//            }).transition().duration(1000).delay(13000)
+//                    .attr({
+//                        fill: "black",
+//                        opacity: 0,
+//            })
+//            ;
+            
+            
+            
+            
+            
+            
+            
             
       
         })   //csv
