@@ -41,7 +41,16 @@
             var dy = 3;
             var color = d3.scale.linear().domain([1911,2018])
                           .interpolate(d3.interpolateHcl)
-                          .range([d3.rgb("#ffd700"), d3.rgb('B8860B')]); //#FFEB3B, #1A237E
+                          .range([d3.rgb("#ddd"), d3.rgb('#000')]); //#FFEB3B, #1A237E   #ffd700 #B8860B
+            function color2(year){
+                if(year<1950){
+                   return '#FFCC22';
+                }else if(year>=1950 && year<2000){
+                   return '#EE7700';
+                }else{
+                    return '#003377';
+                }
+            };
             
             var scaleX = d3.scale.linear()
                                     .domain([1,12])
@@ -87,10 +96,10 @@
             
             axisTem.attr({
                 opacity: 0,
-            }).transition().duration(1000).delay(25000).attr({
+            }).transition().duration(1000).delay(26000).attr({
                 opacity: 1,
             })
-      
+//      
             
 //            circles = svg.selectAll("circles").data(data).enter();
 //            circles.append("circle")
@@ -175,27 +184,50 @@
             
             //binding
             rects = d3.select("svg").selectAll("rects").data(data).enter();
-            rects.append("rect")
-                .attr({
-                       rx: 0,
+            
+            
+            
+            console.log(rects);
+            
+            
+            
+            
+            
+            rects.append("rect").attr({
+                        rx: 0,
                         ry: 0,
-                        x: function(d){return scaleX(7)},
+                        x: function(d){return startX;},
                         y: function(d){return startY + d.index1*(intervalH);},
-                        width: rWidth/2,
+                        width: rWidth,
                         height: rHeight,
-                        fill: function(d){return color(d.year);},
+                        fill: function(d){return color2(d.year);},
+                        
+//                        fill: function(d){return color(d.year);}, //舊的漸層上色
+                        opacity: 0,
             })
-                .transition().duration(5000).delay(3000) //發牌，跑到各年月位置
-                    .attr({
+            .transition().duration(300).delay(function(d,i){return ((d.year-1911)%108)*50;})
+                .attr({
+                        rx: 0,
+                        ry: 0,
+                        x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1);},
+                        y: function(d){return startY + d.index1*(intervalH);},
+                        width: function(d){if(+d.month===1){return rWidth;}else{return 0;}},
+                        height: rHeight,
+//                        fill: function(d){return color(d.year);},
+                        opacity: function(d){if(+d.month===1){return 1;}else{return 0;}},
+            })
+            .transition().duration(2000).delay(function(d,i){return 8000;}) //發牌，跑到各年月位置
+                .attr({
                         rx: 0,
                         ry: 0,
                         x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1);},
                         y: function(d){return startY + d.index1*intervalH;},
                         width: rWidth,
                         height: rHeight,
-                        fill: function(d){return color(d.year);}
+//                        fill: function(d){return color(d.year);},
+                        opacity: 1,    
                 })
-                .transition().duration(5000).delay(11000) //跑到排名定位
+                .transition().duration(5000).delay(12000) //跑到排名定位
                     .attr({
                         rx: 0,
                         ry: 0,
@@ -204,7 +236,7 @@
                         y: function(d){return startY + d.index2*intervalH;},
                         width: function(d){return rWidth/d.sameRank-5;},
                 })
-                .transition().duration(5000).delay(21000) //跑到溫度定位
+                .transition().duration(5000).delay(22000) //跑到溫度定位
                     .attr({
                         rx: 10,
                         ry: 10,
@@ -214,50 +246,47 @@
                         height: 10,
                         opacity: 1,
                 })
-                .transition().duration(1000).delay(29000) //凸顯出冠軍
+                .transition().duration(1000).delay(30000) //凸顯出冠軍
                     .attr({
-                        fill: function(d){
-                            if(+d.index2===1){
-                                return color(d.year);
-                               }else{
-                                return "#ccc";
-                               }
-                        },
+//                        fill: function(d){
+//                            if(+d.index2===1){
+//                                return color(d.year);
+//                               }else{
+//                                return "#ccc";
+//                               }
+//                        },
                         opacity: function(d){
                             if(+d.index2===1){
                                 return 1;
                                }else{
-                                return 0.3;
+                                return 0;
                                }
                         },
                 })
-                .transition().duration(1000).delay(34000) //秀出2000以後的資料
+                .transition().duration(1000).delay(35000) //秀出2000以後的資料
                     .attr({
-                        fill: function(d){
-                            if(+d.year>=2000){
-                                return color(d.year);
-                               }else{
-                                return "#ccc";
-                               }
-                        },
-                        opacity: function(d){
-                            if(+d.year>=2000){
-                                return 1;
-                               }else{
-                                return 0.3;
-                               }
-                        },
+//                        fill: function(d){
+//                            if(+d.year>=2000){
+//                                return color(d.year);
+//                               }else{
+//                                return "#ccc";
+//                               }
+//                        },
+                        opacity: 0,
+//                        function(d){
+//                            if(+d.year>=2000){
+//                                return 1;
+//                               }else{
+//                                return 1;
+//                               }
+//                        },
                 })
                 
+            
+            
+            
     
-//                .transition().duration(5000).delay(13000)
-//                    .attr({
-//                        x: function(d){return startX + (intervalMonth+rWidth)*(d.month-1);},
-//                        y: function(d){return startY + d.index1*intervalH;},
-//                        width: rWidth,
-//                        height: rHeight,
-//                        fill: function(d){return color(d.year);}
-//                })
+
                 
             ;
             
@@ -286,17 +315,18 @@
             yearT.append("text")
                     .attr("class","years")
                     .attr({
-                        x: function(d){return scaleX(7)-rWidth;},
+                        x: 10,
                         y: function(d){return startY + (d-1911+1)*(intervalH) + rHeight +dy;},
                         fill: "black",
                         "font-size": "25px",
-                        opacity: 1,
+                        opacity: 0,
             }).text(function(d){return d+"年-";})
-                .transition().duration(5000).delay(3000)
+                .transition().duration(300).delay(function(d,i){return (d-1911)%108*50;})
                     .attr({
-                        x: 10,
+//                        x: 10,
+                          opacity: 1,
             })
-                .transition().duration(1000).delay(11000)
+                .transition().duration(1000).delay(13000)
                     .attr({
                        
                         opacity: 0,
@@ -326,11 +356,12 @@
                         "font-size": "25px",
                         opacity: 0,
             }).text(function(d){return "第"+d+"名-";})
-                .transition().duration(1000).delay(15000)
+                .transition().duration(1000).delay(16000)
                     .attr({
                         fill: "black",
                         opacity: 1,
-            }).transition().duration(1000).delay(21000)
+            })
+                .transition().duration(1000).delay(22000)
                     .attr({
                         fill: "black",
                         opacity: 0,
@@ -379,10 +410,11 @@
                      return d.values[0].year.toString()+"年";}
                    }
                 )
-                .transition().duration(1000).delay(29000)
+                .transition().duration(1000).delay(30000)
                 .attr({
                     opacity: 1,    
-            }).transition().duration(1000).delay(34000)
+            })
+                .transition().duration(1000).delay(35000)
                 .attr({
                     opacity: 0,    
             })
@@ -408,10 +440,11 @@
                         return d.values[0].tem +"°C";
                    }
                 )
-                .transition().duration(1000).delay(29000)
+                .transition().duration(1000).delay(30000)
                 .attr({
                     opacity: 1,    
-            }).transition().duration(1000).delay(34000)
+            })
+                .transition().duration(1000).delay(35000)
                 .attr({
                     opacity: 0,    
             })
@@ -427,7 +460,7 @@
             
             
             
-            var line = d3.svg.line().interpolate('basis')
+            var line = d3.svg.line().interpolate('monotone') //basis
                         .x(function(d,i) {
                             return scaleX(i + 1); //利用尺度運算資料索引，傳回x的位置
                         })
@@ -440,10 +473,89 @@
                 stroke: "black",
                 "stroke-width": "3px",
                 opacity: 0,
-            }).transition().duration(1000).delay(35000).attr({
-               opacity:1 
-            });
+            })
+//                .transition().duration(1000).delay(37000).attr({
+//               opacity:1 
+//            })
+            ;
 
+            
+            
+            
+           
+            yearData = d3.nest().key(function(d){return d.year;}).entries(data);
+            console.log(yearData);
+            
+            t =[]
+            for(var i=0; i<yearData.length; i++){
+                t.push([]);
+            }
+            
+            
+            for(var i=0; i<yearData.length; i++){
+                for(var j=0; j<12; j++){
+
+                    t[i].push(yearData[i].values[j].tem);
+                }
+            }
+            
+            
+            console.log(t);
+           
+            
+            lines = svg.selectAll(".lines").data(t).enter();
+            
+            
+             for(var i=0; i<108; i++){
+                 console.log(t[i]);
+            svg.append('path').attr("class","lines").attr('d', line(t[i])).attr({
+                fill: "rgba(0,0,0,0)",
+                stroke: color2(1911+i),
+                "stroke-width": "3px",
+                opacity: 0,
+            }).transition().duration(200).delay(i*200+36000).attr({opacity: 1,})
+                .transition().duration(200).delay(i*200+200+36000).attr({opacity:0.2,})
+                 ;
+                 
+             }
+            
+            
+            
+           
+           
+        
+        //現在年份1911-2017    
+            for(var i=0; i<107; i++){
+                nowYear = svg.append("text").attr({
+                
+                x: scaleX(9),
+                y: scaleY(10),
+                fill: "black",
+                "font-size": "250px",
+                opacity: 0,
+                }).text(1911+i).transition().duration(1).delay(i*200+36000).attr({opacity:1,})
+                    .transition().duration(1).delay(i*200+200+36000).attr({
+                    opacity: 0, });
+                   
+            }
+            
+        //現在年份2018
+            nowYear2018 = svg.append("text").attr({
+                
+                x: scaleX(9),
+                y: scaleY(10),
+                fill: "black",
+                "font-size": "250px",
+                opacity: 0,
+                }).text(2018).transition().duration(1).delay((2018-1911)*200+36000).attr({opacity:1,})
+            .transition().duration(1000).delay((2018-1911)*200+1000+36000).attr({opacity:0,})
+            ;
+                 
+            
+            
+            
+            
+            
             
             //各段標題
             titles = [
@@ -452,28 +564,28 @@
                 "氣溫高低分布",
                 "最高月均溫發生年份",
                 "2000年後數據多大於氣候平均值（想確認切哪一年合適？）",
-            ]
-            
-            //標題的位置
-            svg.append("text").attr({
-                x: 10,
-                y: titleY,
-                "font-size": "50px",
-                fill: "black",
-                "font-weight": 900,
-                opacity: 0,
-            }).text(titles[0])
-                .transition().duration(1000).delay(7000).attr({opacity: 1,})
-                .transition().duration(1000).delay(11000).attr({opacity: 0})
-                .transition().duration(1000).delay(15000).text(titles[1]).attr({opacity: 1})
-                .transition().duration(1000).delay(21000).attr({opacity: 0})
-                .transition().duration(1000).delay(25000).text(titles[2]).attr({opacity: 1})
-                .transition().duration(1000).delay(28000).attr({opacity: 0})
-                .transition().duration(1000).delay(29000).text(titles[3]).attr({opacity: 1})
-                .transition().duration(1000).delay(34000).attr({opacity: 0})
-                .transition().duration(1000).delay(35000).text(titles[4]).attr({opacity: 1})
-            ;
-            
+            ];
+//            
+//            //標題的位置
+//            svg.append("text").attr({
+//                x: 10,
+//                y: titleY,
+//                "font-size": "50px",
+//                fill: "black",
+//                "font-weight": 900,
+//                opacity: 0,
+//            }).text(titles[0])
+//                .transition().duration(1000).delay(7000).attr({opacity: 1,})
+//                .transition().duration(1000).delay(11000).attr({opacity: 0})
+//                .transition().duration(1000).delay(15000).text(titles[1]).attr({opacity: 1})
+//                .transition().duration(1000).delay(21000).attr({opacity: 0})
+//                .transition().duration(1000).delay(25000).text(titles[2]).attr({opacity: 1})
+//                .transition().duration(1000).delay(28000).attr({opacity: 0})
+//                .transition().duration(1000).delay(29000).text(titles[3]).attr({opacity: 1})
+//                .transition().duration(1000).delay(34000).attr({opacity: 0})
+//                .transition().duration(1000).delay(35000).text(titles[4]).attr({opacity: 1})
+//            ;
+//            
             
       
         })   //csv
