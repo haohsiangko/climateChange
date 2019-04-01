@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <script src="https://d3js.org/d3.v3.js"></script>    
     <style>
+       
     </style>
     
     <title>Climate Change</title>
@@ -17,12 +18,36 @@
             .attr({
                 x: 0,
                 y: 0,
-                width: 3000,
-                height: 2000,
+                width: 1600,
+                height: 1600,
             })
             .style({
-                background: "#eee"
+                background: "#333",
+                opacity: 1,
         });
+
+        //照片浮水印
+      
+            var imgs = svg.selectAll("image").data([0]);
+                imgs.enter()
+                .append("svg:image")
+                .attr("class","logo")
+//                .attr('transform', 'rotate(-45)')
+                .attr("xlink:href", "logo.png")
+                .attr("x", function(d,i){return 1350;})
+                .attr("y", function(d,i){return 0;})
+                .attr("width", "200")
+                .attr("height", "200")
+                .attr("opacity", 0.5)
+                ;
+        
+
+
+
+
+
+            
+
         
         //讀入資料
         d3.csv("test.csv", function(data){
@@ -30,7 +55,7 @@
             
             
             var titleY = 70;
-            var moveDown = 70;
+            var moveDown = 130;
             var startX = 110;
             var startY = titleY + moveDown;
             var intervalW = 0;
@@ -48,7 +73,7 @@
                 }else if(year>=1950 && year<2000){
                    return '#EE7700';
                 }else{
-                    return '#003377';
+                    return '#33CCFF';//'#003377'
                 }
             };
             
@@ -95,28 +120,38 @@
                 .call(yAxis);
             
             axisTem.attr({
+                fill: "#fff",
                 opacity: 0,
             }).transition().duration(1000).delay(26000).attr({
                 opacity: 1,
             })
-//      
+   
             
-//            circles = svg.selectAll("circles").data(data).enter();
-//            circles.append("circle")
-//                    .attr({
-//                        cx: function(d){return scaleX(d.month);},
-//                        cy: function(d){return startY + d.index1*intervalH;},
-//                        r: 5,
-//                        fill: function(d){return color(d.year);},
-//            }).transition().duration(5000).delay(3000)
-//                    .attr({
-//                        cx: function(d){return scaleX(d.month);},
-//                        cy: function(d){return scaleY(d.tem);},
-//                        r: 5,
-//                        fill: function(d){return color(d.year);},
-//            });
             
-
+            //圖例
+            legend = ['1911-1949年','1950-1999年','2000-2018年'];
+            legends = d3.select("svg").selectAll(".legends").data(legend).enter();
+            legends.append("rect").attr({
+                x: function(d,i){return scaleX((1+i*4));},
+                y: function(d,i){return scaleY(32)-100+10;},
+                width: rWidth/2,
+                height: rHeight,
+                fill: function(d,i){if(i===0){return color2(1911);}else if(i===1){return color2(1950);}else{return color2(2000);};},
+                opacity: 0,
+            }).transition().duration(1000).delay(7000).attr({opacity: 1});
+            
+            //圖例文字
+            legendT = d3.select("svg").selectAll(".legendT").data(legend).enter();
+             legendT.append("text").attr({
+                x: function(d,i){return scaleX((1+i*4))+rWidth/2+20;},
+                y: function(d,i){return scaleY(32)-100+10+10;},
+                fill: "#fff",
+                "font-size": 35,
+                 opacity: 0,
+            }).text(function(d){return d;}).transition().duration(1000).delay(7000).attr({opacity: 1});;
+            
+            
+            
             
 //            data.sort(function (a, b) {
 //             return a.tem < b.tem ? 1 : -1;
@@ -124,61 +159,7 @@
 //            
             
             
-            
-//原本要放代數
-            
-//            var fadeIn = 5000; //進場動畫時間
-//            var fadeIn_s = 1000;
-//            var fadeOut = 1000; //撤掉元素的時間
-//            var still = 5000;
-//            var still_s = 3000;
-//            var endAxis = 1000; //撤銷舊座標軸預留幾秒
-//            var addAxis = 1000;
-//            
-//            
-//            
-//            //rect的部分
-//            var cut0 = 0; 
-//            //停滯3s，全部集中，表示說這是年份
-//            var cut1 = cut0 + still_s;  //rect啟動
-//            //發牌到各個月份，發5s 
-//            
-//            動畫結束前2秒啟動座標（出現年份）
-//            
-//            
-//            var cut2 = cut1 + fadeIn; // 動畫結束時間
-//            //靜止5s 
-//            var cut3 = cut2 + still; //rect啟動
-//            //移動成排名5s 
-//            
-//            舊座標（年份）消失
-//            動畫結束前2秒啟動座標（出現排名）
-//            
-//            var cut4 = cut3 + fadeIn; //動畫結束時間
-//            //靜止5s
-//            var cut5 = cut4 + still; //rect啟動
-//            //移動到溫度位置5s 
-//            
-//            舊座標（排名）消失
-//            動畫結束前啟動座標（出現溫度）
-//            
-//            var cut6 = cut5 + fadeIn; //動畫結束時間
-//            //靜止3s
-//            var cut7 = cut6 + still_s; //rect啟動、 舊顏色消失
-//            //2s 變色，label指出冠軍 
-//                        
-//            
-//            var cut8 = cut7 + fadeIn_s; //動畫結束時間
-//            //停留5s
-//            var cut9 = cut8 + still; //rect啟動
-//            //秀出平均 還有2000年以後，展示5s 
-//            
-//            
-//            var cut10 = cut9 + fadeIn_s;  //動畫結束時間
-//            //收斂回初始狀態5s 
-//            
-//            
-//        
+
             
 
             
@@ -187,7 +168,7 @@
             
             
             
-            console.log(rects);
+//            console.log(rects);
             
             
             
@@ -298,7 +279,7 @@
                     .attr({
                         x: function(d,i){return scaleX(+d) ;}, //startX + (intervalMonth+rWidth)*i+rWidth/4
                         y: titleY + moveDown - 15,
-                        fill: "black",
+                        fill: "#fff",
                         "font-size": "30px",
                         opacity: 0,
                         "text-anchor": "middle",
@@ -317,7 +298,7 @@
                     .attr({
                         x: 10,
                         y: function(d){return startY + (d-1911+1)*(intervalH) + rHeight +dy;},
-                        fill: "black",
+                        fill: "#fff",
                         "font-size": "25px",
                         opacity: 0,
             }).text(function(d){return d+"年-";})
@@ -352,18 +333,18 @@
                     .attr({
                         x: 10,
                         y: function(d){return startY + d*(intervalH) + rHeight +dy;},
-                        fill: "black",
+                        fill: "#fff",
                         "font-size": "25px",
                         opacity: 0,
             }).text(function(d){return "第"+d+"名-";})
                 .transition().duration(1000).delay(16000)
                     .attr({
-                        fill: "black",
+                        fill: "#fff",
                         opacity: 1,
             })
                 .transition().duration(1000).delay(22000)
                     .attr({
-                        fill: "black",
+                        fill: "#fff",
                         opacity: 0,
             })
             ;
@@ -395,7 +376,7 @@
                     .attr({
                         x: function(d){return scaleX(+d.key);},
                         y: function(d){return scaleY(+d.values[0].tem)-10},
-                        fill: "black",
+                        fill: "#fff",
                         "font-size": "25px",
                         opacity: 0,
                 
@@ -432,7 +413,7 @@
                     .attr({
                         x: function(d){return scaleX(+d.key);},
                         y: function(d){return scaleY(+d.values[0].tem)+40},
-                        fill: "black",
+                        fill: "#fff",
                         "font-size": "25px",
                         opacity: 0,
                 
@@ -454,9 +435,7 @@
             
             
             
-            //歷史均溫
-            historyAvg = [15.48,15.78,17.76,21.42,24.76,27.15,28.91,28.66,27.03,23.74,20.76,17.39];
-            
+           
             
             
             
@@ -468,16 +447,6 @@
                             return scaleY(d); //利用尺度運算資料的值，傳回y的位置
                         });
 
-            svg.append('path').attr('d', line(historyAvg)).attr({
-                fill: "rgba(0,0,0,0)",
-                stroke: "black",
-                "stroke-width": "3px",
-                opacity: 0,
-            })
-//                .transition().duration(1000).delay(37000).attr({
-//               opacity:1 
-//            })
-            ;
 
             
             
@@ -507,34 +476,80 @@
             
             
              for(var i=0; i<108; i++){
-                 console.log(t[i]);
-            svg.append('path').attr("class","lines").attr('d', line(t[i])).attr({
-                fill: "rgba(0,0,0,0)",
-                stroke: color2(1911+i),
-                "stroke-width": "3px",
-                opacity: 0,
-            }).transition().duration(200).delay(i*200+36000).attr({opacity: 1,})
-                .transition().duration(200).delay(i*200+200+36000).attr({opacity:0.2,})
-                 ;
                  
+                 console.log(t[i]);
+
+                if(i ===0){
+                  
+                     svg.append('path').attr("class","lines").attr('d', line(t[i])).attr({
+                        fill: "rgba(0,0,0,0)",
+                        stroke: color2(1911+i),
+                        "stroke-width": "3px",
+                        opacity: 0,
+                    }).transition().duration(1000).delay(i*200+36000).attr({opacity: 1,})
+                        .transition().duration(200).delay(i*200+200+38000).attr({opacity:0.2,})
+                         ;
+                    
+                    
+                    
+                   }
+                 
+                 
+                 else if(i >=89 ){
+                        svg.append('path').attr("class","lines").attr('d', line(t[i])).attr({
+                        fill: "rgba(0,0,0,0)",
+                        stroke: color2(1911+i),
+                        "stroke-width": "3px",
+                        opacity: 0,
+                    }).transition().duration(200).delay(i*200+38000).attr({opacity: 1,})
+                        .transition().duration(200).delay(i*200+200+38000).attr({opacity:0.2,}).transition().duration(1000).delay(61000).attr({opacity: 1,})
+                         ;
+                    
+                    }else{
+                        svg.append('path').attr("class","lines").attr('d', line(t[i])).attr({
+                        fill: "rgba(0,0,0,0)",
+                        stroke: color2(1911+i),
+                        "stroke-width": "3px",
+                        opacity: 0,
+                    }).transition().duration(200).delay(i*200+38000).attr({opacity: 1,})
+                        .transition().duration(200).delay(i*200+200+38000).attr({opacity:0.2,})
+                         ;
+                    }
              }
             
             
             
-           
-           
-        
-        //現在年份1911-2017    
-            for(var i=0; i<107; i++){
+            
+            
+         //1911   
+
                 nowYear = svg.append("text").attr({
                 
-                x: scaleX(9),
+                x: scaleX(8),
                 y: scaleY(10),
-                fill: "black",
+                fill: "#aaa",
                 "font-size": "250px",
                 opacity: 0,
-                }).text(1911+i).transition().duration(1).delay(i*200+36000).attr({opacity:1,})
-                    .transition().duration(1).delay(i*200+200+36000).attr({
+                }).text(1911+0).transition().duration(1000).delay(0*200+36000).attr({opacity:1,})
+                    .transition().duration(1).delay(0*200+200+38000).attr({
+                    opacity: 0, });
+                   
+            
+            
+            
+            
+        
+        //現在年份1912-2017    
+            for(var i=1; i<107; i++){
+                nowYear = svg.append("text").attr({
+                
+                x: scaleX(8),
+                y: scaleY(10),
+                fill: "#aaa",
+                "font-size": "250px",
+                opacity: 0,
+                }).text(1911+i).transition().duration(1).delay(i*200+38000).attr({opacity:1,})
+                    .transition().duration(1).delay(i*200+200+38000).attr({
                     opacity: 0, });
                    
             }
@@ -542,17 +557,40 @@
         //現在年份2018
             nowYear2018 = svg.append("text").attr({
                 
-                x: scaleX(9),
+                x: scaleX(8),
                 y: scaleY(10),
-                fill: "black",
+                fill: "#aaa",
                 "font-size": "250px",
                 opacity: 0,
-                }).text(2018).transition().duration(1).delay((2018-1911)*200+36000).attr({opacity:1,})
-            .transition().duration(1000).delay((2018-1911)*200+1000+36000).attr({opacity:0,})
+                }).text(2018).transition().duration(1).delay((2018-1911)*200+38000).attr({opacity:1,})
+            .transition().duration(1000).delay((2018-1911)*200+1000+38000).attr({opacity:0,})
             ;
+            
+            
+            
+            
+            
                  
             
             
+            
+            
+            
+             //歷史均溫
+            historyAvg = [15.48,15.78,17.76,21.42,24.76,27.15,28.91,28.66,27.03,23.74,20.76,17.39];
+            
+            
+            
+            svg.append('path').attr('d', line(historyAvg)).attr({
+                fill: "rgba(0,0,0,0)",
+                stroke: "#C10066",
+                "stroke-width": "7px",
+                opacity: 0,
+            })
+                .transition().duration(1000).delay(61000).attr({
+               opacity:1 
+            })
+            ;
             
             
             
@@ -560,34 +598,55 @@
             //各段標題
             titles = [
                 "1911-2018年各月月均溫數據（台北站）",
-                "按高溫紀錄排名，可發現近年數據排名較前",
+                "按高溫紀錄排名，近年數據名列前矛",
                 "氣溫高低分布",
                 "最高月均溫發生年份",
-                "2000年後數據多大於氣候平均值（想確認切哪一年合適？）",
+                "歷年各月月均溫",
+                "2000年後月均溫多大於長期平均值",
             ];
 //            
-//            //標題的位置
-//            svg.append("text").attr({
-//                x: 10,
-//                y: titleY,
-//                "font-size": "50px",
-//                fill: "black",
-//                "font-weight": 900,
-//                opacity: 0,
-//            }).text(titles[0])
-//                .transition().duration(1000).delay(7000).attr({opacity: 1,})
-//                .transition().duration(1000).delay(11000).attr({opacity: 0})
-//                .transition().duration(1000).delay(15000).text(titles[1]).attr({opacity: 1})
-//                .transition().duration(1000).delay(21000).attr({opacity: 0})
-//                .transition().duration(1000).delay(25000).text(titles[2]).attr({opacity: 1})
-//                .transition().duration(1000).delay(28000).attr({opacity: 0})
-//                .transition().duration(1000).delay(29000).text(titles[3]).attr({opacity: 1})
-//                .transition().duration(1000).delay(34000).attr({opacity: 0})
-//                .transition().duration(1000).delay(35000).text(titles[4]).attr({opacity: 1})
-//            ;
-//            
             
+            //標題的位置
+            svg.append("text").attr({
+                x: 10,
+                y: titleY,
+                "font-size": "50px",
+                fill: "#fff",
+                "font-weight": 900,
+                opacity: 0,
+            }).text(titles[0])
+                .transition().duration(1000).delay(8000).attr({opacity: 1,})
+                .transition().duration(1000).delay(12000).attr({opacity: 0})
+                .transition().duration(1000).delay(15000).text(titles[1]).attr({opacity: 1})
+                .transition().duration(1000).delay(22000).attr({opacity: 0})
+                .transition().duration(1000).delay(25000).text(titles[2]).attr({opacity: 1})
+                .transition().duration(1000).delay(29000).attr({opacity: 0})
+                .transition().duration(1000).delay(30000).text(titles[3]).attr({opacity: 1})
+                .transition().duration(1000).delay(35000).attr({opacity: 0})
+                .transition().duration(1000).delay(36000).text(titles[4]).attr({opacity: 1})
+                .transition().duration(1000).delay(59000).attr({opacity: 0})
+                .transition().duration(1000).delay(60000).text(titles[5]).attr({opacity: 1})
+            ;
+            
+            //數據來源
+            svg.append("text").attr({
+                x: 10,
+                y: scaleY(10)+80,
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 0
+            }).text("數據來源：中央氣象局").transition().duration(1000).delay(7000).attr({opacity: 1});
       
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         })   //csv
 
 
