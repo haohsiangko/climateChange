@@ -638,6 +638,14 @@
             }).text("數據來源：中央氣象局").transition().duration(1000).delay(7000).attr({opacity: 1});
       
             
+            //長期平均值
+            svg.append("text").attr({
+                x: scaleX(12)+10,
+                y: scaleY(historyAvg[11]),
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 0
+            }).text("-長期平均值").transition().duration(1000).delay(61000).attr({opacity: 1});
             
             
             
