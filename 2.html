@@ -1,0 +1,426 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://d3js.org/d3.v3.js"></script>    
+    <style>
+       
+    </style>
+    
+    <title>Climate Change</title>
+</head>
+<body>
+  
+    <svg></svg>
+    <script>
+
+
+
+        //畫布
+        var svg = d3.select("svg").attr("class","chart")
+            .attr({
+                x: 0,
+                y: 0,
+                width: 1600, //800
+                height: 1200, //600
+            })
+            .style({
+                background: "#222229",
+                opacity: 1,
+        });
+
+        //照片浮水印
+      
+//            var imgs = svg.selectAll("image").data([0]);
+//                imgs.enter()
+//                .append("svg:image")
+//                .attr("class","logo")
+////                .attr('transform', 'rotate(-45)')
+//                .attr("xlink:href", "logo2.png")
+//                .attr("x", function(d,i){return 1350;})
+//                .attr("y", function(d,i){return 1000;})
+//                .attr("width", "200")
+//                .attr("height", "200")
+//                .attr("opacity", 0.3)
+//                ;
+        
+        
+        //讀入資料
+        d3.csv("2.csv", function(data){
+            console.log(data);
+            
+            
+            
+           var red = "#FF0088";
+            var yellow = "#FFBB00";
+            var blue = "#00BBFF";
+            
+            
+            var blue1 = '#00BBFF';
+            var blue2 = '#5555FF';//
+            var blue3 = '#CCEEFF';
+            
+              
+            var titleY = 100;
+//            var moveDown = 130;
+            var startX = 110;
+            var startY = titleY + 50;
+//            var intervalW = 100;
+            var intervalMonth = 120;
+            var intervalH = 12; 
+//            var rWidth = 100;
+//            var rHeight = 5;
+//            var dy = 3;
+            
+            
+            var scaleX = d3.scale.linear()
+                                    .domain([1950,2018])
+                                    .range([startX, startX + intervalMonth*11 ]);
+            
+            var scaleY = d3.scale.linear()
+                                    .domain([0,110])
+                                    .range([1200-200, 200]);
+            
+            
+
+            
+            
+            
+            
+             //Axis
+            var xAxis = d3.svg.axis().scale(scaleX) //增加軸線物件，並套用尺度(x)
+	                       .orient("bottom") //標示位置
+	                       .ticks(5) //刻度數量
+                           .tickFormat(function(d){return d;});
+            
+            var yAxis = d3.svg.axis().scale(scaleY) //增加軸線物件，並套用尺度(y)
+                .orient("left") //標示位置
+                .ticks(5) //刻度數量
+                .tickFormat(function(d) { return d+"°C "; });
+            
+
+
+            var h = 1200 -200;
+            var padding2 = 100;
+            
+            //x軸年份
+            var axisYear = svg.append('g').attr('class', 'axis')
+                .attr('transform', 'translate(0, '+ (h) +')')
+                .style("font-size","30")
+                .call(xAxis); 
+            
+            axisYear.attr({
+                 fill: "none",
+                stroke: "#fff"
+
+            }).selectAll("text").attr({
+                fill: "#fff",
+                stroke: "none",
+                dy: 35,
+            }).text(function(d){return d+"/"+(+d+1)+"冬半年";});
+            
+            
+            
+            
+            var dayCounts = svg.selectAll(".dayCounts").data([0,20,40,60,80,100]).enter();
+            dayCounts.append("text").attr({
+                x: 40,
+                y: function(d){return 1000-10-d*8+15;},
+                fill: "#fff",
+                "font-size": "30"
+            }).text(function(d){return d+"-";})
+            
+            
+  
+            
+//            var years = svg.selectAll(".years").data([1947,1960,1980,2000]).enter();
+//            
+//            years.append("text").attr({
+//                x: function(d){return scaleX(d)},
+//                y: scaleY(15)+50,
+//                fill: "#fff",
+//                "text-anchor": "middle",
+//                "font-size": 40,
+//            }).text(function(d){return d;});
+//            
+//            
+            
+            //y軸溫度
+//            var axisTem = svg.append('g').attr('class', 'axis')
+//                .attr('transform', 'translate('+ (padding2) +')', 0)
+//                .style("font-size","30")
+//                .call(yAxis);
+            
+//            axisTem.attr({
+//                fill: "#fff",
+//                opacity: 1,
+//            })
+//                .transition().duration(1000).delay(18000).attr({
+//                opacity: 0,
+//            }).transition().duration(1000).delay(26000).attr({
+//                opacity: 1,
+//            })
+            
+            ;
+            
+            
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+//              var rects = svg.selectAll(".rects").data([data[0],data[1]]).enter();
+            
+
+            
+            
+            for(var j=0; j<69; j++){
+             
+                
+//                var sum = data[j].day1+data[j].day2+data[j].day3;
+                
+                //寒流
+                for(var k=0;k<data[j].sum ;k++){
+                    
+                    var rects = svg.selectAll(".rects").data([data[j]]).enter();
+                    
+                   day1 = +data[j].day1;
+                    day2 = +data[j].day2;
+                    day3 = +data[j].day3;
+//                    console.log(day1,day2,day3);
+                    
+                rects.append("rect").attr({
+                    x: function(d){return scaleX(d.year);},
+                    y: -100,
+                    width: 5,
+                    height: 5,
+                    fill: function(d){if(k<day1){return blue1;}else if(k>=day1 && k<day1+day2){return blue2;}else{return blue3;}},
+                    opacity: 1,
+                }).transition().duration(100).delay(1000+j*200+k*5).attr({ y: function(d){return 1000-10-8*k;},})
+                    .transition().duration(1000).delay(16000).attr({opacity: function(d){if(j===50 || j===66 || j===68){return 1;}else{return 0.1;}}})
+                    .transition().duration(1000).delay(21000).attr({opacity: function(d){return 1;}})
+                    .transition().duration(1000).delay(25000).attr({opacity: function(d){if(j===3||j===22||j===36||j===37||j===38||j===39||j===40||j===41||j===46||j===47||j===48||j===49||j===50||j===51||j===53||j===54||j===55||j===56||j===57||j===58||j===59||j===61||j===62||j===64||j===66||j===67||j===68){return 0.1;}else{return 1;}}})
+//                    .transition().duration(1000).delay(27000).attr({opacity: 0,})
+                    ;
+                    
+                }
+            
+
+            }
+            
+
+            
+            //無寒流的年份
+            var warmYears = svg.selectAll(".warmYears").data([data[2000-1950],data[2016-1950],data[2018-1950]]).enter();
+            
+            
+            warmYears.append("text").attr({
+                x: function(d){return scaleX(d.year);},
+                y: function(d){return 1000-10-8*d.sum-30;},
+                fill:"#fff",
+                "font-size": "30",
+                opacity: 0
+            }).text(function(d){return d.year+"/"+(+d.year+1);}).transition().duration(1000).delay(16000).attr({opacity: 1,})
+            .transition().duration(1000).delay(21000).attr({opacity: 0,});
+            ;
+            
+            
+            //無寒流年份說明文字
+            svg.append("text").attr({
+                x: scaleX(2004),
+                y: 900,
+                fill:"#fff",
+                "font-size": "30",
+                opacity: 0,
+            }).text("無寒流紀錄").transition().duration(1000).delay(17000).attr({opacity: 1,})
+            .transition().duration(1000).delay(21000).attr({opacity: 0,});
+            ;
+            
+            
+            
+            
+            //各段標題
+            titles = [
+                "台北站寒冷日數明顯減少",
+
+            ];
+//            
+            
+            //標題的位置
+            svg.append("text").attr({
+                x: 50,
+                y: 100,
+                "font-size": "60px",
+                fill: "#fff",
+                "font-weight": 900,
+                opacity: 1,
+            }).text(titles[0])
+            ;
+            
+            
+            //數據來源
+            svg.append("text").attr({
+                x: 50,
+                y: 1200-50-50,
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 1
+            }).text("數據來源：中央氣象局")
+//                .transition().duration(1000).delay(7000).attr({opacity: 1})
+            ;
+            
+            
+            //註解
+            svg.append("text").attr({
+                x: 50,
+                y: 1200-50,
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 1
+            }).text("註：冬半年指10月至隔年4月；本圖最後統計時間為2019年3月31日。")
+            ;
+            //大陸冷氣團、強烈大陸冷氣團、寒流分別指台北市日低溫介於12-14°C、10-12°C、10°C以下時。
+            
+            
+            //中央社製圖
+            svg.append("text").attr({
+                x: 1400,
+                y: 1200-50,
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 1
+            }).text("中央社製圖")
+            ;
+
+            
+            //y軸單位     
+            svg.append("text").attr({
+                x: 100,
+                y: 200-20,
+                "font-size": 30,
+                fill: "#fff",
+                opacity: 1,
+                "font-size": "40"
+            }).text("日數")
+               
+
+            ;
+            
+            
+            //legend 文字部分
+            var legends = svg.selectAll(".legends").data(["大陸冷氣團","強烈大陸冷氣團","寒流"]).enter();
+            legends.append("text").attr({
+                x: 1600-300,
+                y: function(d,i){return 200+i*40;},
+                fill: "#fff",
+                "font-size": 30,
+            }).text(function(d){return d;});
+      
+            
+            //legend 度數部分
+            var legends2 = svg.selectAll(".legends2").data(["（12-14°C）","（10-12°C）","（10°C以下）"]).enter();
+             legends2.append("text").attr({
+                x: 1600-300-170,
+                y: function(d,i){return 200+i*40;},
+                fill: "#fff",
+                "font-size": 30,
+            }).text(function(d){return d;});
+            
+            
+            //legend 矩形部分
+            var legends3 = svg.selectAll(".legends3").data([0,1,2]).enter();
+            legends3.append("rect").attr({
+                x:  1600-300-170-30,
+                y:  function(d,i){return 200+i*40-30+2;},
+                fill: function(d,i){if(i===0){return blue3;}else if(i===1){return blue2;}else{return blue1;}},
+                width: 30,
+                height: 30,
+            });
+            
+            
+            
+            
+            //50天水平線
+            svg.append("line").attr({
+                x1: scaleX(1950),
+                x2:scaleX(2018),
+                y1:function(d){return 1000-10-50*8+10;},
+                y2:function(d){return 1000-10-50*8+10;},
+                stroke: yellow,
+                "stroke-width": 3,
+                opacity: 0,
+            }).transition().duration(1000).delay(22000).attr({opacity: 1,})
+//            .transition().duration(1000).delay(27000).attr({opacity: 0,})
+            ;
+            
+            //「50天」
+            svg.append("text").attr({
+                x: scaleX(2018),
+                y:function(d){return 1000-10-50*8+20;},
+                fill: yellow,
+                "font-size": 35,
+                opacity: 0,
+            }).text("50日").transition().duration(1000).delay(22000).attr({opacity: 1,})
+//             .transition().duration(1000).delay(27000).attr({opacity: 0,})
+            ;
+            
+            
+            
+            //1986
+            svg.append("line").attr({
+                x1: scaleX(1986),
+                x2:scaleX(1986),
+                y1:function(d){return 330;},
+                y2:400,
+                stroke: yellow,
+                "stroke-width": 3,
+                opacity: 0,
+            })
+                .transition().duration(1000).delay(25000).attr({opacity: 1,})
+//             .transition().duration(1000).delay(27000).attr({opacity: 0,})
+            ;
+
+            svg.append("circle").attr({cx: scaleX(1986),
+                                       cy: 330,
+                                       r: 5,
+                                       fill: yellow,
+                                       opacity: 0
+                                      }).transition().duration(1000).delay(25000).attr({opacity: 1,})
+            ;
+            
+            
+            svg.append("text").attr({x: scaleX(1987), y: 360, fill: yellow, 
+                                    
+                                    "font-size": "35",
+                                     "stroke-width": 3, 
+                                     opacity: 0,
+//                                     "text-anchor": "middle",
+                                    }).text("1986/1987後，僅8個冬半年寒冷日數超過50日")
+                .transition().duration(1000).delay(25000).attr({opacity: 1,})
+//             .transition().duration(1000).delay(27000).attr({opacity: 0,})
+            ;
+            
+            
+            
+            
+            
+        })   //csv
+
+
+
+
+
+
+    </script>
+
+</body>
+</html>
